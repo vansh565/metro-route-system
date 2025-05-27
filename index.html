@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Metro Routing System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url("{{ url_for('static', filename='TC5qcGc.webp') }}") no-repeat center center fixed;
+            background-size: cover;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+        }
+        .form-select, .btn {
+            font-size: 1.1rem;
+        }
+        .form-label {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: black;
+        }
+        .map-img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .error {
+            color: #dc3545;
+        }
+        .success {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card p-4">
+            <h1 class="text-center mb-4">Metro Routing System</h1>
+            <form method="POST" action="/">
+                <div class="mb-3">
+                    <label for="start" class="form-label">Start Station</label>
+                    <select name="start" id="start" class="form-select" required>
+                        <option value="" disabled selected>Select start station</option>
+                        {% for station in stations %}
+                            <option value="{{ station }}">{{ station }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="end" class="form-label">End Station</label>
+                    <select name="end" id="end" class="form-select" required>
+                        <option value="" disabled selected>Select end station</option>
+                        {% for station in stations %}
+                            <option value="{{ station }}">{{ station }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Find Shortest Path</button>
+                </div>
+            </form>
+
+            {% if not stations %}
+                <div class="result-box error">
+                    <p>No stations loaded. Check CSV file or server logs.</p>
+                </div>
+            {% endif %}
+
+            {% if result %}
+                <div class="result-box">
+                    <h4>Result:</h4>
+                    <p class="{% if 'No path' in result or 'Invalid' in result or 'Error' in result %}error{% else %}success{% endif %}">
+                        {{ result | safe }}
+                    </p>
+                    {% if image_path %}
+                        <div class="text-center">
+                            <img src="{{ url_for('static', filename=image_path) }}?{{ 'now'|random }}" alt="Metro Route Map" class="map-img">
+                        </div>
+                    {% else %}
+                        <p class="error">Map not generated. Check server logs for errors.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
